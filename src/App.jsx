@@ -139,17 +139,17 @@ function App() {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <h1 className="text-3xl font-bold mb-4">Pixel Art PNG a SVG</h1>
+      <h1 className="text-3xl font-bold mb-4">Pixel Art PNG to SVG</h1>
 
       <div className="border-4 border-dashed border-gray-400 p-6 rounded-lg bg-white max-w-xl mx-auto mb-4">
         <p className="mb-2">
-          Arrastra y suelta un archivo PNG aquí o usa el botón:
+          Drag and drop a PNG file here or use the button:
         </p>
         <label
           htmlFor="file-upload"
           className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block"
         >
-          Seleccionar archivo
+          Select file
         </label>
         <input
           id="file-upload"
@@ -162,7 +162,7 @@ function App() {
 
       {imagePreviewUrl && (
         <div className="mt-4 mb-4">
-          <p className="mb-2 font-medium">Vista previa:</p>
+          <p className="mb-2 font-medium">Preview:</p>
           <img
             src={imagePreviewUrl}
             alt="Vista previa"
@@ -176,12 +176,12 @@ function App() {
         onClick={convertToSVG}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        Convertir a SVG
+        Convert to SVG
       </button>
 
       {svgCode && (
         <div className="mt-6 text-left max-w-3xl mx-auto">
-          <h2 className="text-xl font-semibold mb-2">SVG Generado</h2>
+          <h2 className="text-xl font-semibold mb-2">SVG Generated</h2>
           <pre className="bg-white p-4 border rounded overflow-auto max-h-80">
             {svgCode}
           </pre>
@@ -190,7 +190,7 @@ function App() {
             download="pixel-art.svg"
             className="inline-block mt-2 text-blue-600 hover:underline"
           >
-            Descargar SVG
+            Download SVG
           </a>
         </div>
       )}
