@@ -1,6 +1,6 @@
 # Pixel Art PNG to SVG Converter
 
-You want to have svg pixel art elements for your webpage?
+You want to convert your PNG pixel art into SVG for your proyects?
 Gotcha buddy, don't worry! ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧
 
 Users can:
@@ -36,12 +36,12 @@ Users can:
 
 ```
 src/
-├── App.jsx          # Main component
-├── main.jsx         # React entry point
-├── index.css        # TailwindCSS
+├── App.jsx          
+├── main.jsx         
+├── index.css        
 public/
 ├── favicon.svg
-vite.config.js       # Vite configuration
+vite.config.js       
 ```
 
 ---
