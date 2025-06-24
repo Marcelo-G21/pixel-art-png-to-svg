@@ -7,7 +7,7 @@ function App() {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     return () => {
