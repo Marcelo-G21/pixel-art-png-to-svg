@@ -194,7 +194,7 @@ function App() {
 
       {
         isLoading && (
-          <div className="mt-4 mb-4 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <div className="animate-spin rounded-rull h-10 w-10 border-t-4 border-blue-600 border-opacity-50"></div>
           </div> 
         )
