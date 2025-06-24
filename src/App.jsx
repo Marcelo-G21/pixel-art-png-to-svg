@@ -205,14 +205,14 @@ function App() {
 
       {svgCode && (
         <div className="mt-6 text-left max-w-3xl mx-auto">
-          <h2 className="text-xl font-semibold mb-2">SVG Generated</h2>
-          <pre className="bg-white p-4 border rounded overflow-auto max-h-80">
+          <h2 className="text-xl font-semibold mb-2 dark:text-white">SVG Generated</h2>
+          <pre className="bg-white dark:bg-slate-600 dark:text-white p-4 border rounded overflow-auto max-h-80">
             {svgCode}
           </pre>
           <a
             href={downloadUrl}
             download={`${originalFileName}_svg.svg`}
-            className="inline-block mt-2 text-blue-600 hover:underline"
+            className="inline-block mt-2 text-blue-600 dark:text-cyan-600 hover:underline"
           >
             Download SVG
           </a>
