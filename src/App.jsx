@@ -175,11 +175,11 @@ function App() {
 
       {imagePreviewUrl && (
         <div className="mt-4 mb-4">
-          <p className="mb-2 font-medium">Preview:</p>
+          <p className="mb-2 font-medium dark:text-white">Preview:</p>
           <img
             src={imagePreviewUrl}
             alt="Vista previa"
-            className="mx-auto max-w-full border border-gray-400|"
+            className="mx-auto max-w-full border border-gray-400| dark:border-white"
           />
         </div>
       )}
