@@ -1,6 +1,5 @@
 # Pixel Art PNG to SVG Converter
 
-Tired of the crappy web apps to convert png to svg?
 You want to have svg pixel art elements for your webpage?
 Gotcha buddy, don't worry! ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧
 
