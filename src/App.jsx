@@ -157,7 +157,7 @@ function App() {
     <div
       className={`min-h-screen bg-gray-100 dark:bg-slate-700 p-4 text-center ${
         dragActive ? "bg-blue-100" : ""
-      }`}
+      } select-none`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -230,7 +230,7 @@ function App() {
           <h2 className="text-xl font-semibold mb-2 dark:text-white">
             SVG Generated
           </h2>
-          <pre className="bg-white dark:bg-slate-600 dark:text-white p-4 border rounded overflow-auto max-h-80">
+          <pre className="select-text bg-white dark:bg-slate-600 dark:text-white p-4 border rounded overflow-auto max-h-80">
             {svgCode}
           </pre>
           <a
