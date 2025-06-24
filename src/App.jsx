@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 function App() {
   const canvasRef = useRef(null);
   const [svgCode, setSvgCode] = useState("");
+  const [originalFileName, setOriginalFileName] = useState("");
   const [downloadUrl, setDownloadUrl] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
@@ -34,7 +35,11 @@ function App() {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    handleImage(file);
+    if (file) {
+      const baseName = file.name.replace(/\.[^/.]+$/, "");
+      setOriginalFileName(baseName);
+      handleImage(file);
+    }
   };
 
   const handleDragOver = (e) => {
@@ -55,6 +60,9 @@ function App() {
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleImage(e.dataTransfer.files[0]);
+      const baseName = file.name.replace(/\.[^/.]+$/, "");
+      setOriginalFileName(baseName);
+      handleImage(file);
     }
   };
 
@@ -106,13 +114,16 @@ function App() {
     svg += `</svg>`;
 
     try {
-      const response = await fetch("https://svg-optimizer-api.vercel.app/api/optimize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "image/svg+xml",
-        },
-        body: svg,
-      });
+      const response = await fetch(
+        "https://svg-optimizer-api.vercel.app/api/optimize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "image/svg+xml",
+          },
+          body: svg,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al optimizar SVG en el backend");
@@ -142,9 +153,7 @@ function App() {
       <h1 className="text-3xl font-bold mb-4">Pixel Art PNG to SVG</h1>
 
       <div className="border-4 border-dashed border-gray-400 p-6 rounded-lg bg-white max-w-xl mx-auto mb-4">
-        <p className="mb-2">
-          Drag and drop a PNG file here or use the button:
-        </p>
+        <p className="mb-2">Drag and drop a PNG file here or use the button:</p>
         <label
           htmlFor="file-upload"
           className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block"
@@ -187,7 +196,7 @@ function App() {
           </pre>
           <a
             href={downloadUrl}
-            download="pixel-art.svg"
+            download={`${originalFileName}_svg.svg`}
             className="inline-block mt-2 text-blue-600 hover:underline"
           >
             Download SVG
