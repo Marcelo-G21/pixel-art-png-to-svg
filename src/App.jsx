@@ -7,6 +7,7 @@ function App() {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -67,6 +68,7 @@ function App() {
   };
 
   const convertToSVG = async () => {
+    setIsLoading(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { width, height } = canvas;
@@ -138,6 +140,8 @@ function App() {
     } catch (err) {
       console.error(err);
       alert("Error al enviar el SVG al backend para optimización.");
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -187,6 +191,14 @@ function App() {
       >
         Convert to SVG
       </button>
+
+      {
+        isLoading && (
+          <div className="mt-4 mb-4 flex justify-center">
+            <div className="animate-spin rounded-rull h-10 w-10 border-t-4 border-blue-600 border-opacity-50"></div>
+          </div> 
+        )
+      }
 
       {svgCode && (
         <div className="mt-6 text-left max-w-3xl mx-auto">
