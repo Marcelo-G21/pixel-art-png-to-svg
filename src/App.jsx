@@ -80,7 +80,7 @@ function App() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { width, height } = canvas;
-    const imgData = ctx.getImageData(0, 0, width, height).data;
+    const imageData = ctx.getImageData(0, 0, width, height).data;
 
     const colors = {};
 
