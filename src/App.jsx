@@ -84,70 +84,61 @@ function App() {
 
     const colors = {};
 
-    for (let i = 0; i < imgData.length; i += 4) {
-      const a = imgData[i + 3];
-      if (a === 0) continue;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const i = (y * width + x) * 4;
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        const a = imageData[i + 3];
+  
+        if (a === 0) continue;
 
-      const r = imgData[i];
-      const g = imgData[i + 1];
-      const b = imgData[i + 2];
-
-      const colorKey = `${r},${g},${b},${a}`;
-      if(!colors[colorKey]) colors[colorKey] = [];
-
-      const pixelIndex = i / 4;
-      const x = pixelIndex % width;
-      const y = Math.floor(pixelIndex / width);
-      colors[colorKey].push([x,y]);
+        const colorKey = `${r},${g},${b},${a}`;
+        if (!colors[colorKey]) colors[colorKey] = [];
+        colors[colorKey].push([x, y]);
+      }
     }
 
-    const componentToHex = (c) => {
-      const hex = c.toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
+    onst makePathData = (x, y, w) => `M${x} ${y}h${w}`;
+  const makePath = (stroke, d) => `<path stroke="${stroke}" d="${d}" />\n`;
 
-    const getColor = (r,g,b,a) => {
-      if(a === 255) return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
-      if(a === 0) return false;
-      return `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
-    };
+  const getColor = (r, g, b, a) => {
+    if (a === 255) {
+      return `#${[r, g, b].map(c => c.toString(16).padStart(2, "0")).join("")}`;
+    }
+    return `rgba(${r},${g},${b},${(a / 255).toFixed(2)})`;
+  };
 
-    const makePathData = (x,y,w) => `M${x} ${y}h${w}`;
+  let pathsOutput = "";
 
-    const makePath = (color, data) => `<path stroke="${color}" d="${data}" /> \n`;
+  for (const colorKey in colors) {
+    const [r, g, b, a] = colorKey.split(",").map(Number);
+    const color = getColor(r, g, b, a);
+    const points = colors[colorKey];
 
-    let svgPaths = "";
+    points.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
 
-    Object.entries(colors).forEach(([colorKey, pixels]) => {
-      const [r, g, b, a] = colorKey.split(",").map(Number);
-      const color = getColor(r, g, b, a);
-      if (!color) return;
-  
-      let paths = "";
-      let curPath = null;
-      let widthCount = 0;
-  
-      for (let i = 0; i < pixels.length; i++) {
-        const [x, y] = pixels[i];
-  
-        if (curPath && y === curPath[1] && x === curPath[0] + widthCount) {
-          widthCount++;
-        } else {
-          if (curPath) {
-            paths += makePathData(curPath[0], curPath[1], widthCount);
-          }
-          curPath = [x, y];
-          widthCount = 1;
-        }
+    let d = "";
+    let prev = null;
+    let w = 0;
+
+    for (let i = 0; i < points.length; i++) {
+      const [x, y] = points[i];
+
+      if (prev && y === prev[1] && x === prev[0] + w) {
+        w++;
+      } else {
+        if (prev) d += makePathData(prev[0], prev[1], w);
+        prev = [x, y];
+        w = 1;
       }
-      if (curPath) {
-        paths += makePathData(curPath[0], curPath[1], widthCount);
-      }
-  
-      svgPaths += makePath(color, paths);
-    });
+    }
+    if (prev) d += makePathData(prev[0], prev[1], w);
+    pathsOutput += makePath(color, d);
+  }
 
-    let svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' shape-rendering='crispEdges'>\n`;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">\n${pathsOutput}</svg>`;
 
     try {
       const response = await fetch(
