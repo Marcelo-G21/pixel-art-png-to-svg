@@ -143,7 +143,6 @@ function App() {
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">\n${pathsOutput}</svg>`;
 
     try {
-      console.log(svg);
       const response = await fetch(
         "https://svg-optimizer-api.vercel.app/api/optimize",
         {
