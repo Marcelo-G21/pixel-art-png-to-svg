@@ -91,7 +91,7 @@ function App() {
         const g = imageData[i + 1];
         const b = imageData[i + 2];
         const a = imageData[i + 3];
-  
+
         if (a === 0) continue;
 
         const colorKey = `${r},${g},${b},${a}`;
@@ -100,47 +100,50 @@ function App() {
       }
     }
 
-    onst makePathData = (x, y, w) => `M${x} ${y}h${w}`;
-  const makePath = (stroke, d) => `<path stroke="${stroke}" d="${d}" />\n`;
+    const makePathData = (x, y, w) => `M${x} ${y}h${w}`;
+    const makePath = (stroke, d) => `<path stroke="${stroke}" d="${d}" />\n`;
 
-  const getColor = (r, g, b, a) => {
-    if (a === 255) {
-      return `#${[r, g, b].map(c => c.toString(16).padStart(2, "0")).join("")}`;
-    }
-    return `rgba(${r},${g},${b},${(a / 255).toFixed(2)})`;
-  };
-
-  let pathsOutput = "";
-
-  for (const colorKey in colors) {
-    const [r, g, b, a] = colorKey.split(",").map(Number);
-    const color = getColor(r, g, b, a);
-    const points = colors[colorKey];
-
-    points.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-
-    let d = "";
-    let prev = null;
-    let w = 0;
-
-    for (let i = 0; i < points.length; i++) {
-      const [x, y] = points[i];
-
-      if (prev && y === prev[1] && x === prev[0] + w) {
-        w++;
-      } else {
-        if (prev) d += makePathData(prev[0], prev[1], w);
-        prev = [x, y];
-        w = 1;
+    const getColor = (r, g, b, a) => {
+      if (a === 255) {
+        return `#${[r, g, b]
+          .map((c) => c.toString(16).padStart(2, "0"))
+          .join("")}`;
       }
-    }
-    if (prev) d += makePathData(prev[0], prev[1], w);
-    pathsOutput += makePath(color, d);
-  }
+      return `rgba(${r},${g},${b},${(a / 255).toFixed(2)})`;
+    };
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">\n${pathsOutput}</svg>`;
+    let pathsOutput = "";
+
+    for (const colorKey in colors) {
+      const [r, g, b, a] = colorKey.split(",").map(Number);
+      const color = getColor(r, g, b, a);
+      const points = colors[colorKey];
+
+      points.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+
+      let d = "";
+      let prev = null;
+      let w = 0;
+
+      for (let i = 0; i < points.length; i++) {
+        const [x, y] = points[i];
+
+        if (prev && y === prev[1] && x === prev[0] + w) {
+          w++;
+        } else {
+          if (prev) d += makePathData(prev[0], prev[1], w);
+          prev = [x, y];
+          w = 1;
+        }
+      }
+      if (prev) d += makePathData(prev[0], prev[1], w);
+      pathsOutput += makePath(color, d);
+    }
+
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">\n${pathsOutput}</svg>`;
 
     try {
+      console.log(svg);
       const response = await fetch(
         "https://svg-optimizer-api.vercel.app/api/optimize",
         {
