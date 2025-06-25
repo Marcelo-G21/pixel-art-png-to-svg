@@ -63,8 +63,8 @@ function App() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImage(e.dataTransfer.files[0]);
+    const file = e.dataTransfer.files[0];
+    if (file) {
       const baseName = file.name.replace(/\.[^/.]+$/, "");
       setOriginalFileName(baseName);
 
@@ -80,48 +80,74 @@ function App() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { width, height } = canvas;
-    const imageData = ctx.getImageData(0, 0, width, height).data;
+    const imgData = ctx.getImageData(0, 0, width, height).data;
 
-    let svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' shape-rendering='crispEdges'>\n`;
+    const colors = {};
 
-    for (let y = 0; y < height; y++) {
-      let x = 0;
-      while (x < width) {
-        const idx = (y * width + x) * 4;
-        const a = imageData[idx + 3];
-        if (a === 0) {
-          x++;
-          continue;
-        }
-        const r = imageData[idx];
-        const g = imageData[idx + 1];
-        const b = imageData[idx + 2];
-        const hex = `#${[r, g, b]
-          .map((c) => c.toString(16).padStart(2, "0"))
-          .join("")}`;
+    for (let i = 0; i < imgData.length; i += 4) {
+      const a = imgData[i + 3];
+      if (a === 0) continue;
 
-        let runLength = 1;
-        while (
-          x + runLength < width &&
-          (() => {
-            const i = (y * width + x + runLength) * 4;
-            return (
-              imageData[i + 3] === a &&
-              imageData[i] === r &&
-              imageData[i + 1] === g &&
-              imageData[i + 2] === b
-            );
-          })()
-        ) {
-          runLength++;
-        }
+      const r = imgData[i];
+      const g = imgData[i + 1];
+      const b = imgData[i + 2];
 
-        svg += `  <rect x='${x}' y='${y}' width='${runLength}' height='1' fill='${hex}' />\n`;
-        x += runLength;
-      }
+      const colorKey = `${r},${g},${b},${a}`;
+      if(!colors[colorKey]) colors[colorKey] = [];
+
+      const pixelIndex = i / 4;
+      const x = pixelIndex % width;
+      const y = Math.floor(pixelIndex / width);
+      colors[colorKey].push([x,y]);
     }
 
-    svg += `</svg>`;
+    const componentToHex = (c) => {
+      const hex = c.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    };
+
+    const getColor = (r,g,b,a) => {
+      if(a === 255) return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+      if(a === 0) return false;
+      return `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
+    };
+
+    const makePathData = (x,y,w) => `M${x} ${y}h${w}`;
+
+    const makePath = (color, data) => `<path stroke="${color}" d="${data}" /> \n`;
+
+    let svgPaths = "";
+
+    Object.entries(colors).forEach(([colorKey, pixels]) => {
+      const [r, g, b, a] = colorKey.split(",").map(Number);
+      const color = getColor(r, g, b, a);
+      if (!color) return;
+  
+      let paths = "";
+      let curPath = null;
+      let widthCount = 0;
+  
+      for (let i = 0; i < pixels.length; i++) {
+        const [x, y] = pixels[i];
+  
+        if (curPath && y === curPath[1] && x === curPath[0] + widthCount) {
+          widthCount++;
+        } else {
+          if (curPath) {
+            paths += makePathData(curPath[0], curPath[1], widthCount);
+          }
+          curPath = [x, y];
+          widthCount = 1;
+        }
+      }
+      if (curPath) {
+        paths += makePathData(curPath[0], curPath[1], widthCount);
+      }
+  
+      svgPaths += makePath(color, paths);
+    });
+
+    let svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' shape-rendering='crispEdges'>\n`;
 
     try {
       const response = await fetch(
@@ -208,7 +234,7 @@ function App() {
         <div className="mt-4 flex justify-center">
           <svg
             aria-hidden="true"
-            class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600 dark:fill-cyan-600"
+            className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600 dark:fill-cyan-600"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
