@@ -254,7 +254,7 @@ function App() {
           </pre>
           <a
             href={downloadUrl}
-            download={`${originalFileName}_svg.svg`}
+            download={`${originalFileName}.svg`}
             className="inline-block mt-2 text-blue-600 dark:text-cyan-600 hover:underline"
           >
             Download SVG
